@@ -32,76 +32,10 @@ public class PatientConditions {
     public static FhirContext ctx = FhirContext.forR4();
 
         public static void main(String[] args) throws IOException {
-            //String serverBase = "https://fhir.medcom.dk/fhir";
-            //String serverBase = "http://hapi.fhir.org/baseR4";
-            //FhirContext ctx = FhirContext.forR4();
-
-           //IGenericClient client = ctx.newRestfulGenericClient(serverBase);
-
-//Upload et sæt af patienter til server
-           //ArrayList<String> patientList = uploadAndGetReferenceToPatients("C:/Users/kirst/Projects/TestdataFKI/TestPatienter.csv", client);
-
-           // Giv patienterne tilstande, og gem på disk
-           //ArrayList<String> patientList = simplePatientList(1948498,1948531);
-           //GivepatientsConditions(patientList);
-
-
-            //Upload tilstande til serveren
-            //uploadConditionsToServer("C:/Users/kirst/Projects/TestdataFKI/Tilstande/");
-
-
-            //conditionChangeTest();
-
-// søg efter kognitionsproblemer
-
-        //    searchforproblems();
-//simplesearch();
-
+            conditionChangeTest();
 
         }
 
-
-
-
-
-    private static void uploadConditionsToServer(String folder) {
-        File dir = new File(folder);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                String serverBase = "http://hapi.fhir.org/baseR4";
-                FhirContext ctx = FhirContext.forR4();
-                IParser parser = ctx.newJsonParser();
-                IGenericClient client = ctx.newRestfulGenericClient(serverBase);
-                String conString = getJsonObject(child.getAbsolutePath());
-                Condition con = parser.parseResource(Condition.class, conString);
-                MethodOutcome outcome = client.create()
-                        .resource(con)
-                        .prettyPrint()
-                        .encodedJson()
-                        .execute();
-
-
-            }
-        }
-    }
-
-    private static void GivepatientsConditions(ArrayList<String> patientList) {
-        ArrayList<CodeableConcept> conditionList = generateRandomConditions(1,"C:/Users/kirst/Projects/TestdataFKI/traeningSCT.csv");
-        saveConditionsToFile(conditionList, patientList, "t");
-        ArrayList<CodeableConcept> conditionList1 = generateRandomConditions(1,"C:/Users/kirst/Projects/TestdataFKI/hjemmeplejesct.csv");
-        saveConditionsToFile(conditionList1, patientList, "homecare");
-        ArrayList<CodeableConcept> conditionList2 = generateRandomConditions(1,"C:/Users/kirst/Projects/TestdataFKI/hjemmesygeplejesct.csv");
-        saveConditionsToFile(conditionList2, patientList, "t");
-        ArrayList<CodeableConcept> conditionList3 = generateRandomConditions(1,"C:/Users/kirst/Projects/TestdataFKI/p119SCT.csv");
-        saveConditionsToFile(conditionList3, patientList, "t");
-        ArrayList<CodeableConcept> conditionList4 = generateRandomConditions(1,"C:/Users/kirst/Projects/TestdataFKI/hjemmeplejesct.csv");
-        saveConditionsToFile(conditionList4, patientList, "homecare");
-        ArrayList<CodeableConcept> conditionList5 = generateRandomConditions(1,"C:/Users/kirst/Projects/TestdataFKI/hjemmesygeplejesct.csv");
-        saveConditionsToFile(conditionList5, patientList, "t");
-
-
-        }
 
 
     private static void conditionChangeTest() {
@@ -110,9 +44,9 @@ public class PatientConditions {
         //String serverBase = "http://hapi.fhir.org/baseR4";
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
-        ArrayList<String> patientList = uploadAndGetReferenceToPatients("C:/Users/kirst/Projects/TestdataFKI/ConditionChange/TestPatienterEinar.csv", client);
+        ArrayList<String> patientList = uploadAndGetReferenceToPatients("C:/ConditionChange/TestPatienterEinar.csv", client);
         ArrayList<String> practitionerList = uploadAndGetReferenceToPractitioners(client);
-        String resourceDir="C:/Users/kirst/Projects/TestdataFKI/ConditionChange/";
+        String resourceDir="C:/ConditionChange/";
         conditionChange(resourceDir, patientList,practitionerList,client);
 
 
@@ -312,23 +246,6 @@ public class PatientConditions {
 
 
         }
-    //public <T extends IBaseResource> T parseResource(Class<T> theResourceType, String theMessageString)
-    private static <T extends IBaseResource> String LoadResourceToServer(String filename, Class<T> theResourceType) {
-//        FhirContext ctx = FhirContext.forR4();
-//        IParser parser = ctx.newJsonParser();
-//        String s = getJsonObject(filename);
-//        Encounter enc333 = parser.parseResource(theResourceType, s);
-//        enc333.setSubject(patientRef);
-//        outcome = client.create()
-//                .resource(obs)
-//                .prettyPrint()
-//                .encodedJson()
-//                .execute();
-//
-//        String enc333Reference = outcome.getId().toUnqualifiedVersionless().getValue();
-//
-           return null;
-    }
 
     private static String getJsonObject(String filename) {
         File f = new File(filename);
@@ -384,80 +301,6 @@ public class PatientConditions {
             return patientList;
     }
 
-    private static void saveConditionsToFile(ArrayList<CodeableConcept> conditions, ArrayList<String> patientlist, String problemType) {
-        for(int i=0; i<conditions.size(); i++){
-
-            KLCondition condition = new KLCondition();
-            // ..populate the Condition object..
-            condition.setCode(conditions.get(i));
-            int rand = randBetween(0,patientlist.size()-1);
-            condition.setSubject(new Reference().setReference(patientlist.get((rand))));
-
-            //Create a date
-            GregorianCalendar gc = new GregorianCalendar();
-
-            int year = randBetween(2019, 2020);
-            gc.set(gc.YEAR, year);
-            int dayOfYear = randBetween(1, gc.getActualMaximum(gc.DAY_OF_YEAR));
-            gc.set(gc.DAY_OF_YEAR, dayOfYear);
-            Date newDate=gc.getTime();
-            //Apply date to Recorded date
-            condition.setRecordedDate(newDate);
-
-            //Set clinical status active
-            CodeableConcept c1 = new CodeableConcept();
-            List<Coding> cList1 = new ArrayList<Coding>();
-            cList1.add(new Coding().setCode("active").setSystem("http://terminology.hl7.org/CodeSystem/condition-clinical"));
-            c1.setCoding(cList1);
-            condition.setClinicalStatus(c1);
-
-            if(problemType.equals("homecare")){
-                CodeableConcept c2 = new CodeableConcept();
-                List<Coding> cList2 = new ArrayList<Coding>();
-                List<String> FSIIIseverities = new ArrayList<String>();
-
-                FSIIIseverities.add("B2");
-                FSIIIseverities.add("B3");
-                FSIIIseverities.add("B4");
-                FSIIIseverities.add("B5");
-
-
-                List<String> FSIIIseveritiesDisplay = new ArrayList<String>();
-
-                FSIIIseveritiesDisplay.add("Lette begrænsninger");
-                FSIIIseveritiesDisplay.add("Moderate begrænsninger");
-                FSIIIseveritiesDisplay.add("Svære begrænsninger");
-                FSIIIseveritiesDisplay.add("Totale begrænsninger");
-
-                cList2.add(new Coding().setCode(FSIIIseverities.get(i%4)).setSystem("http://kl.dk/fhir/common/caresocial/CodeSystem/FSIII").setDisplay(FSIIIseveritiesDisplay.get(i%4)));
-                c2.setCoding(cList2);
-
-                condition.setSeverity(c2);
-            }
-
-
-            //Serialiser tilstanden og print den ud som fil
-            ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
-            IParser parser = ctx.newJsonParser();
-
-// Indent the output
-            parser.setPrettyPrint(true);
-//String s1=(conditions.get(i).getCoding().get(1).getDisplay()).replace(" ","");
-
-// Serialize it
-            String serialized = parser.encodeResourceToString(condition);
-            try (PrintWriter out = new PrintWriter("C:/Users/kirst/Projects/TestdataFKI/Tilstande/condition"+conditions.get(i).getCoding().get(1).getDisplay().replace(" ","")+".json")) {
-                out.println(serialized);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-    }
-    public static int randBetween(int start, int end) {
-        return start + (int)Math.round(Math.random() * (end - start));
-    }
 
     public static ArrayList<String> uploadAndGetReferenceToPatients(String filename, IGenericClient client){
             ArrayList<String> patientList = new ArrayList<String>();
@@ -519,95 +362,6 @@ public class PatientConditions {
 
             return patientList;
         }
-            public static ArrayList<CodeableConcept> generateRandomConditions(int antal, String filename){
-
-                ArrayList<CodeableConcept> conditionList = new ArrayList<CodeableConcept>();
-                try {
-
-                    CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
-                    BufferedReader br = Files.newBufferedReader(Paths.get(filename), StandardCharsets.UTF_8);
-                    CSVReader reader = new CSVReaderBuilder(br).withCSVParser(parser).build();
-
-                    for (int i = 0; i < antal; i++) {
-                        String[] nextLine;
-                        int lineNumber = 0;
-                        while ((nextLine = reader.readNext()) != null) {
-                            List<Coding> conditionCoding = new ArrayList<Coding>();
-                            conditionCoding.add(new Coding().setSystem("http://kl.dk/fhir/common/caresocial/CodeSystem/FSIII").setCode(nextLine[5]).setDisplay(nextLine[4]));
-
-                            Coding c = GetAMoreDetailedSCTCode(nextLine[8]);
-
-                            conditionCoding.add(c);
-                            conditionList.add(new CodeableConcept().setCoding(conditionCoding).setText("Der er " + nextLine[4].toLowerCase() + ", " + c.getDisplay()));
-
-
-                        }
-                    }
-
-                    } catch(
-                            FileNotFoundException e){
-                        e.printStackTrace();
-                    } catch(IOException e){
-                        e.printStackTrace();
-                    } catch(
-                            CsvValidationException e){
-                        e.printStackTrace();
-                    }
-
-return conditionList;
-            }
-
-
-
-
-    public static Coding GetAMoreDetailedSCTCode(String code) throws IOException {
-            URL urlForGetRequest = new URL("http://localhost:8080/concepts?ecQuery=<<"+code+"%20MINUS%20(<<"+code+":363713009=371150009)");
-Coding c= new Coding();
-        String readLine = null;
-        HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
-        conection.setRequestMethod("GET");
-        conection.setRequestProperty("userId", "a1bcdef"); // set userId its a sample here
-        int responseCode = conection.getResponseCode();
-
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(conection.getInputStream()));
-            StringBuffer response = new StringBuffer();
-            while ((readLine = in. readLine()) != null) {
-                response.append(readLine);
-            } in .close();
-            // print result
-
-            //GetAndPost.POSTRequest(response.toString());
-
-            JSONParser parser = new JSONParser();
-            JSONObject json=new JSONObject();
-            try {
-                json = (JSONObject) parser.parse(response.toString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            JSONArray items = (JSONArray) json.get("items");
-            JSONObject item;
-            if (items.size()>1) {
-                Random rand = new Random();
-                int randInt = rand.nextInt(items.size() - 1);
-                item = (JSONObject) items.get(randInt);
-            }
-            else{
-                item = (JSONObject) items.get(0);
-            }
-
-c.setCode(item.get("id").toString()).setDisplay(item.get("fsn").toString()).setSystem("http://snomed.info/sct");
-
-
-        } else {
-            System.out.println("GET NOT WORKED"+code);
-        }
-return c;
-    }
 
 
     }

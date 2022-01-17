@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConditionSCTsearch {
+    //This class searches in FSIII-conditions using SNOMED CT expression constraints. FSIII conditions does not need to be SNOMED CT coded.
+    static FhirContext ctx = FhirContext.forR4();
+    static String serverBase = "http://hapi.fhir.org/baseR4";
 
     public static void main(String[] args) throws IOException {
         //String serverBase = "http://hapi.fhir.org/baseR4";
@@ -35,7 +38,7 @@ public class ConditionSCTsearch {
          //IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
 //Upload et sæt af patienter til server
-        //ArrayList<String> patientList = uploadAndGetReferenceToPatients("C:/Users/kirst/Projects/TestdataFKI/TestPatienter.csv", client);
+       // ArrayList<String> patientList = uploadAndGetReferenceToPatients("C:/Users/kirst/Projects/TestdataFKI/TestPatienter.csv", client);
 
         // Giv patienterne tilstande, og gem på disk
         //ArrayList<String> patientList = simplePatientList(1948498,1948531);
@@ -48,9 +51,9 @@ public class ConditionSCTsearch {
 
         //conditionChangeTest();
 
-//søger efter alle Åges problemer
-       System.out.println("Her er alle Åges tilstande på serveren");
-        patientConditionsearch("Patient/1948508", "");
+//søger efter alle Brunos problemer
+       System.out.println("Her er alle Brunos tilstande på serveren");
+        patientConditionsearch("Patient/2785556", "");
 
         ArrayList<String> childCodes;
         ArrayList<String> KLcodes;
@@ -58,59 +61,55 @@ public class ConditionSCTsearch {
 // søg efter kognitionsproblemer
 System.out.println("Her er alle kognitive problemer på serveren");
         childCodes = childrencodes("373930000");
-        System.out.println(childCodes.size());
-        KLcodes = convertSCTToKLCodes(childCodes);
-        System.out.println(KLcodes.size());
-
+               KLcodes = convertSCTToKLCodes(childCodes);
+int number=0;
         for(int i=0; i<KLcodes.size();i++) {
-            searchcondition(KLcodes.get(i));
+            int g=searchcondition(KLcodes.get(i));
+            number=g+number;
         }
+System.out.println("Der er dette antal: "+number);
 
-//søger efter åges kognitionsproblemer
-        System.out.println("Her er alle Åges kognitive problemer på serveren");
+//søger efter Brunos kognitionsproblemer
+        System.out.println("Her er alle Brunos kognitive problemer på serveren");
 
         for(int i=0; i<KLcodes.size();i++) {
-            patientConditionsearch("Patient/1948508", KLcodes.get(i));
+            patientConditionsearch("Patient/2785556", KLcodes.get(i));
         }
 
         // søg efter hukommelsesproblemer
 
         System.out.println("Her er alle hukommelsesproblemer på serveren");
         childCodes = childrencodes("106136008");
-        System.out.println(childCodes.size());
-        KLcodes = convertSCTToKLCodes(childCodes);
-        System.out.println(KLcodes.size());
 
+        KLcodes = convertSCTToKLCodes(childCodes);
+
+       number=0;
         for(int i=0; i<KLcodes.size();i++) {
-            searchcondition(KLcodes.get(i));
+            int g=searchcondition(KLcodes.get(i));
+            number=g+number;
         }
 
 
         // søg efter ADL
-   /*     System.out.println("Her er Åges ADL tilstande på serveren");//man kan ikke forvente at de større søgninger bliver rigtige
+       System.out.println("Her er Brunos ADL tilstande på serveren");//man kan ikke forvente at de større søgninger bliver rigtige
         childCodes = childrencodes("118233009");
-        System.out.println(childCodes.size());
+
         KLcodes = convertSCTToKLCodes(childCodes);
-        System.out.println(KLcodes.size());
+
 
         for(int i=0; i<KLcodes.size();i++) {
-            patientConditionsearch("Patient/1948508", KLcodes.get(i));*/
-    //    }
+            patientConditionsearch("Patient/2785556", KLcodes.get(i));
+        }
 // søger efter grovmotorisk funktion
-/*
-
         System.out.println("Her er alle gang og bevægelses-ting på serveren");
         childCodes = childrencodes("364832000");
-        System.out.println(childCodes.size());
         KLcodes = convertSCTToKLCodes(childCodes);
-        System.out.println(KLcodes.size());
 
+        number=0;
         for(int i=0; i<KLcodes.size();i++) {
-            searchcondition(KLcodes.get(i));
+            int g=searchcondition(KLcodes.get(i));
+            number=g+number;
         }
-*/
-
-
 
     }
 
@@ -125,8 +124,8 @@ System.out.println("Her er alle kognitive problemer på serveren");
         }
 
         // Create a context and a client
-        FhirContext ctx = FhirContext.forR4();
-        String serverBase = "http://hapi.fhir.org/baseR4";
+
+        //String serverBase = "http://hapi.fhir.org/baseR4";
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
 // We'll populate this list
@@ -165,16 +164,16 @@ System.out.println("Her er alle kognitive problemer på serveren");
         try {
 
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
-            BufferedReader br = Files.newBufferedReader(Paths.get("C:/Users/kirst/Projects/TestdataFKI/alleSCT.csv"), StandardCharsets.UTF_8);
+            BufferedReader br = Files.newBufferedReader(Paths.get("C:/alleSCT.csv"), StandardCharsets.UTF_8);
             CSVReader reader = new CSVReaderBuilder(br).withCSVParser(parser).build();
 
                 String[] nextLine;
                 int lineNumber = 0;
                 while ((nextLine = reader.readNext()) != null) {
                     for (int i = 0; i < childCodes.size(); i++) {
-                        if (childCodes.get(i).equals(nextLine[8])) {
-                            KLCodes.add(nextLine[5]);
-                            System.out.println(nextLine[5]+" "+nextLine[4]);
+                        if (childCodes.get(i).equals(nextLine[3])) {
+                            KLCodes.add(nextLine[1]);
+                            //System.out.println(nextLine[5]+" "+nextLine[4]);
                         }
                     }
 
@@ -243,12 +242,12 @@ System.out.println("Her er alle kognitive problemer på serveren");
         return childCodes;
     }
 
-    private static void searchcondition(String KlCode){
+    private static int searchcondition(String KlCode){
 
 
         // Create a context and a client
-        FhirContext ctx = FhirContext.forR4();
-        String serverBase = "http://hapi.fhir.org/baseR4";
+
+
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
 // We'll populate this list
@@ -278,7 +277,7 @@ System.out.println("Her er alle kognitive problemer på serveren");
             c.getCode().getText();
             System.out.println("Found a patient with the condition: "+c.getCode().getText());
         }
-
+return condi.size();
             }
 
 
@@ -289,8 +288,8 @@ System.out.println("Her er alle kognitive problemer på serveren");
     private static void simplesearch() {
 
         // Create a context and a client
-        FhirContext ctx = FhirContext.forR4();
-        String serverBase = "http://hapi.fhir.org/baseR4";
+        //FhirContext ctx = FhirContext.forR4();
+        //String serverBase = "http://hapi.fhir.org/baseR4";
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
 // We'll populate this list

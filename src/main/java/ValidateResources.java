@@ -127,7 +127,7 @@ String childProfile="";
     public static void main(String[] args) throws IOException {
 
 
-//       ValidateResources("C:/Users/kirst/Projects/TestdataFKI/Tilstande");
+
 validateResource("C:/Users/kirst/Projects/TestdataFKI/Validation/PlannedIntervention/CarePlan-PressureUlcerIntervention.json");
 
 

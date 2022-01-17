@@ -23,14 +23,14 @@ public class SaveCodeSystem {
 //find json-filen her: C:/Users/kirst/Projects/fsh-kl/KL_ig/ig-data/input/vocabulary/, konverter til utf-8, og sæt id.
        //CodeSystem variables FFB
 
-//       static String localFilename="C:/CodeSystems/FFB.csv";
-//       static String version="20200908";
-//       static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/FFB";
-//       static String OID="urn:oid:1.2.208.176.2.22";
-//       static String title="FFB";
-//       static String name ="FFB";
-//       static String description="Codes from FFB";
-//      static String fileLocalSave = "C:/Users/kirst/Projects/fsh-kl/KL_ig/ig-data/input/vocabulary/CodeSystem-FFB.json";
+       static String localFilename="C:/CodeSystems/FFB.csv";
+       static String version="20200908";
+       static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/FFB";
+       static String OID="urn:oid:1.2.208.176.2.22";
+       static String title="FFB";
+       static String name ="FFB";
+       static String description="Codes from FFB";
+      static String fileLocalSave = "C:/CodeSystems//CodeSystem-FFB.json";
 
 
         //CodeSystem variables FSIII
@@ -46,14 +46,14 @@ public class SaveCodeSystem {
 
         //CodeSystem variables KLCommonCareSocialCodes
 
-      static String localFilename="C:/CodeSystems/KLCommonCareSocialCodes.csv";
-        static String version="20200908";
-        static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/KLCommonCareSocialCodes";
-        static String OID="";
-        static String title="KLCommonCareSocialCodes";
-        static String name ="KLCommonCareSocialCodes";
-        static String description="Administrative/technical codes in Local Govenment Denmark (KL), associated with KLCommonCareSocial";
-        static String fileLocalSave = "C:/Users/kirst/Projects/fsh-kl/input/vocabulary/CodeSystem-KLCommonCareSocialCodes.json";
+   //   static String localFilename="C:/CodeSystems/KLCommonCareSocialCodes.csv";
+   //     static String version="20200908";
+   //     static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/KLCommonCareSocialCodes";
+    //    static String OID="";
+    //    static String title="KLCommonCareSocialCodes";
+    //    static String name ="KLCommonCareSocialCodes";
+    //    static String description="Administrative/technical codes in Local Govenment Denmark (KL), associated with KLCommonCareSocial";
+    //    static String fileLocalSave = "C:/Users/kirst/Projects/fsh-kl/input/vocabulary/CodeSystem-KLCommonCareSocialCodes.json";
 
           //static String mode="print";
           //static String mode="save";
