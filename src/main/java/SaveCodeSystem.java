@@ -19,41 +19,52 @@ import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
 
 public class SaveCodeSystem {
-//Download code-system i formatet excel 11+n. Gem det i csv-utf8 fra excel. Læg i mappen C:/CodeSystems/ og kør scriptet
-//find json-filen her: C:/Users/kirst/Projects/fsh-kl/KL_ig/ig-data/input/vocabulary/, konverter til utf-8, og sæt id.
-       //CodeSystem variables FFB
+//Download facet fra FK-klassifikation. Gem det i csv-utf8 fra excel. Læg i mappen C:/CodeSystems/ og kør scriptet
+//find json-filen her: C:/CodeSystems/, konverter til utf-8.
+//Tager ikke højde for inaktive begreber
+        //Når der udskrives til fil, så skal der konverteres fra Ansii til utf-8
+        //CodeSystem variables FFB
 
-       static String localFilename="C:/CodeSystems/FFB.csv";
-       static String version="20200908";
-       static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/FFB";
-       static String OID="urn:oid:1.2.208.176.2.22";
-       static String title="FFB";
-       static String name ="FFB";
-       static String description="Codes from FFB";
-      static String fileLocalSave = "C:/CodeSystems//CodeSystem-FFB.json";
+//      static String localFilename="C:/CodeSystems/FFB.csv";
+//       static String version="20240530";
+//      static String url="urn:oid:1.2.208.176.2.22";
+//       static String OID="urn:oid:1.2.208.176.2.22";
+//      static String title="FFB";
+//      static String name ="FFB";
+//       static String description="Codes from FFB";
+//       static String fileLocalSave = "C:/CodeSystems/CodeSystem-FFB.json";
 
 
         //CodeSystem variables FSIII
 
-//        static String localFilename="C:/CodeSystems/FSIII.csv";
-//        static String version="20200908";
-//        static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/FSIII";
-//        static String OID="urn:oid:1.2.208.176.2.21";
-//        static String title="FSIII";
-//        static String name ="FSIII";
-//        static String description="Codes from FSIII";
-//        static String fileLocalSave = "C:/Users/kirst/Projects/fsh-kl/KL_ig/ig-data/input/vocabulary/CodeSystem-FSIII.json";
+        static String localFilename="C:/CodeSystems/FSIII2.csv";
+        static String version="20240530";
+        static String url="urn:oid:1.2.208.176.2.21";
+        static String OID="urn:oid:1.2.208.176.2.21";
+        static String title="FSIII";
+        static String name ="FSIIItest";
+        static String description="Codes from FSIII";
+        static String fileLocalSave = "C:/CodeSystems/CodeSystem-FSIII3.json";
 
         //CodeSystem variables KLCommonCareSocialCodes
 
-   //   static String localFilename="C:/CodeSystems/KLCommonCareSocialCodes.csv";
-   //     static String version="20200908";
-   //     static String url="http://kl.dk/fhir/common/caresocial/CodeSystem/KLCommonCareSocialCodes";
-    //    static String OID="";
-    //    static String title="KLCommonCareSocialCodes";
-    //    static String name ="KLCommonCareSocialCodes";
-    //    static String description="Administrative/technical codes in Local Govenment Denmark (KL), associated with KLCommonCareSocial";
-    //    static String fileLocalSave = "C:/Users/kirst/Projects/fsh-kl/input/vocabulary/CodeSystem-KLCommonCareSocialCodes.json";
+//      static String localFilename="C:/CodeSystems/KLCommonCareSocialCodes.csv";
+//        static String version="20241031";
+//        static String url="http://fhir.kl.dk/term/CodeSystem/CareSocialCodes";
+//        static String OID="";
+//        static String title="CareSocialCodes";
+//        static String name ="CareSocialCodes";
+//        static String description="Administrative/technical codes in Local Govenment Denmark (KL), associated with common use cases across areas or kl-core";
+//        static String fileLocalSave = "C:/CodeSystems/CodeSystem-CareSocialCodes.json";
+
+//        static String localFilename="C:/CodeSystems/FBOE.csv";
+//        static String version="20240530";
+//        static String url="http://fhir.kl.dk/term/CodeSystem/FBOE";
+//        static String OID="";
+//        static String title="FBOE";
+//        static String name ="FBOE";
+//        static String description="Concepts used for standardizing documentation for Danish postpartum nursing/childrens health promotion program in schools (Da: Sundhedsplejen). The concepts are utilized in the National Database for Children and Youth (LDBU).";
+//        static String fileLocalSave = "C:/CodeSystems/CodeSystem-FBOE.json";
 
           //static String mode="print";
           //static String mode="save";
@@ -72,6 +83,8 @@ public class SaveCodeSystem {
         //cs = setParent(cs, concept, "a")
          //       printCodeSystem(cs);
                 cs.setVersion(version);
+                cs.setCaseSensitive(true);
+                cs.setExperimental(false);
 
                 cs.setUrl(url);
                 if(!OID.equals("")){
@@ -82,6 +95,7 @@ public class SaveCodeSystem {
 
                 cs.setTitle(title);
                 cs.setName(name);
+                cs.setId(title);
                 cs.setStatus(Enumerations.PublicationStatus.ACTIVE);
                 cs.setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
                 cs.setDescription(description);
@@ -123,9 +137,13 @@ public class SaveCodeSystem {
                         parser.setPrettyPrint(true);
 
 // Serialize it
+
                         String serialized = parser.encodeResourceToString(cs);
+
                         try (PrintWriter out = new PrintWriter(fileLocalSave)) {
+                                //byte[] s =serialized.getBytes(StandardCharsets.UTF_8);
                                 out.println(serialized);
+                                //System.out.println(s.toString());
                         }
 
 
@@ -141,6 +159,9 @@ public class SaveCodeSystem {
                 List<String> parentList = new ArrayList();
                 List<String> codeList = new ArrayList();
                 int superNumber=0;
+                String name1 =name;
+                List<String> oldFSIIIList = new ArrayList();
+                List<String> newFSIIIList = new ArrayList();
 
                 try {
                         //csv file containing data
@@ -168,24 +189,31 @@ public class SaveCodeSystem {
                                         }
                                         if(dublet==false){
                                                 codeList.add(nextLine[0]);
-                                                conceptList.add(new CodeSystem.ConceptDefinitionComponent().setCode(nextLine[0]).setDisplay(nextLine[3]).setDefinition(nextLine[11]));
+                                                conceptList.add(new CodeSystem.ConceptDefinitionComponent().setCode(nextLine[0]).setDisplay(nextLine[3]).setDefinition(nextLine[4]));
+                                                if((nextLine[1].length()<100) && (name1.equals("FSIII"))){
+                                                        newFSIIIList.add(nextLine[0]);
+                                                        oldFSIIIList.add(nextLine[1]); //oldFSIIIList.add(nextLine[1]) vil gøre at de damle legacy-nøgler bruges som code
+                                                        //conceptList.add(new CodeSystem.ConceptDefinitionComponent().setCode(nextLine[1]).setDisplay(nextLine[3]).setDefinition(nextLine[4]));
+                                                        //System.out.println(nextLine[1]);
+                                                }
                                                 //System.out.println(conceptList.get(conceptList.size()-1).getDefinition());
-                                        if (nextLine[1].isEmpty()) {
+                                        if (nextLine[2].isEmpty()) {
                                                // System.out.println("foundSuperConcept");
                                                 parentList.add("super");
                                                 superNumber = superNumber + 1;
                                                 //cs.addConcept(conceptList.get(lineNumber));
                                         } else {
-                                                parentList.add(nextLine[1]);
+                                                parentList.add(nextLine[2]);
                                         }
                                 }
                                         if(dublet==true){
+                                                System.out.println("ever here");
                                                 //System.out.println("opfanges dubletter");
                                                 if((conceptList.get(index).hasDisplay())==false){
                                                 conceptList.get(index).setDisplay(nextLine[3]);
                                                         }
                                                 if((conceptList.get(index).hasDefinition())==false){
-                                                        System.out.println("ever here");
+
                                                         System.out.println("sætter definition til "+nextLine[12]);
                                                         conceptList.get(index).setDefinition(nextLine[12]);
 
@@ -239,6 +267,17 @@ public class SaveCodeSystem {
                                 for (int r = 0; r < conceptList.size(); r++) {
                                         if ((conceptList.get(r).getCode()).equals(parent)) {
                                                 //System.out.println(parent+" har barn "+child.getCode());
+
+                                                if (name1.equals("FSIII")) {
+                                                        for (int i=0; i<oldFSIIIList.size(); i++){
+                                                        if (child.getCode().equals(newFSIIIList.get(i))){
+                                                                child.setCode(oldFSIIIList.get(i));
+                                                                }
+
+                                                        }
+
+                                                }
+
                                                 conceptList.get(r).addConcept(child);
                                         }
                                 }
@@ -260,6 +299,20 @@ public class SaveCodeSystem {
                                         cs.addConcept(conceptList.get(l));
                                 }
 
+
+                if (name1.equals("FSIII")) {
+
+
+
+                }
+                for (int i=0;i<cs.getConcept().size();i++){
+                        for (int j=0; j<oldFSIIIList.size(); j++){
+                                if (cs.getConcept().get(i).getCode().equals(newFSIIIList.get(j))){
+                                        cs.getConcept().get(i).setCode(oldFSIIIList.get(j));
+                                }
+
+                        }
+                }
 
                 return cs;
         }
